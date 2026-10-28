@@ -1,5 +1,6 @@
 'use strict';
 const fs=require('node:fs/promises');
+const fsSync=require('node:fs');
 const path=require('node:path');
 const {pathToFileURL}=require('node:url');
 const {spawn}=require('node:child_process');
