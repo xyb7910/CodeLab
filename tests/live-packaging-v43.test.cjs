@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const pkg=require('../package.json');
 test('Win64 installer bundles clangd and GDB/Clangd implementation files',()=>{
- assert.equal(pkg.version,'5.10.6');
+ assert.equal(pkg.version,'5.10.7');
  assert.ok(pkg.build.files.includes('language/**/*'));
  assert.ok(pkg.build.files.includes('debug/**/*'));
  assert.ok(pkg.build.extraResources.some(x=>x.to==='clangd'&&x.from==='toolchain-runtime/clangd'));

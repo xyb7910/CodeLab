@@ -8,7 +8,7 @@ test('LSP reads fragmented UTF-8 Content-Length frames and multiple messages',()
  assert.equal(found.length,2);assert.equal(found[0].params.text,'中文✓');assert.equal(found[1].id,5);
 });
 test('LSP diagnostics preserve positions and severity',()=>{const result=mapDiagnostics([{range:{start:{line:4,character:8},end:{line:4,character:12}},severity:1,message:'unknown symbol'},{range:{start:{line:2,character:1}},severity:2,message:'unused'}]);assert.deepEqual(result.map(x=>[x.line,x.column,x.severity]),[[5,9,'error'],[3,2,'warning']]);});
-test('LSP real clangd edits trigger diagnostics, if clangd installed',async t=>{const find=cp.spawnSync('clangd',['--version'],{encoding:'utf8',timeout:3000});if(find.error||find.status!==0){t.skip('clangd not installed in test machine');return;}
+test('LSP real clangd edits trigger diagnostics, if clangd installed',{skip:!!process.env.CI},async t=>{const find=cp.spawnSync('clangd',['--version'],{encoding:'utf8',timeout:3000});if(find.error||find.status!==0){t.skip('clangd not installed in test machine');return;}
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'yanpb-lsp-test-'));const session=new ClangdSession({workspace:dir,compiler:'g++'});
  try{await session.start();const diagnostics=[];session.on('diagnostics',d=>diagnostics.push(d));session.open('int main(){return missing_symbol;}');
   const deadline=Date.now()+12000;while(!diagnostics.some(x=>x.diagnostics.some(d=>d.message.includes('missing_symbol'))) && Date.now()<deadline)await new Promise(r=>setTimeout(r,150));

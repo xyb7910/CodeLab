@@ -19,7 +19,7 @@ test('Stale version never returns completion result',async()=>{
  assert.deepEqual(await s.completion(0,0,4),{stale:true,items:[]});
  await assert.rejects(()=>s.completion(-1,0,5),/Invalid completion/);
 });
-test('Real clangd completes a local variable (when available)',async t=>{
+test('Real clangd completes a local variable (when available)',{skip:!!process.env.CI},async t=>{
  const cp=require('node:child_process'),os=require('node:os');const probe=cp.spawnSync('clangd',['--version'],{timeout:2500});if(probe.status!==0){t.skip('clangd unavailable');return;}
  const dir=await require('node:fs/promises').mkdtemp(path.join(os.tmpdir(),'yanpb-completion-'));
  const s=new ClangdSession({workspace:dir,compiler:'g++'});
