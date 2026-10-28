@@ -1,0 +1,4 @@
+clangd 22.1.6, official standalone Windows x64 release
+https://github.com/clangd/clangd/releases/download/22.1.6/clangd-windows-22.1.6.zip
+SHA256: ce54f16e0b4fd76d450eeda9664420b195360b73febcfe40e661108fa57f2ce1
+Licensed under Apache-2.0 WITH LLVM-exception. Keep notices shipped in the original archive.

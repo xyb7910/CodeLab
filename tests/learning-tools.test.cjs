@@ -1,0 +1,10 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');
+const t=require('../renderer/learning-tools.js');
+test('colored diff reports changed lines and preserves line numbers',()=>{const d=t.linesDiff('apple\nbanana\npear\n','apple\nband\npear\n','strict');assert.equal(d.changed,1);const x=d.rows.find(x=>x.kind==='change');assert.equal(x.expected,'banana');assert.equal(x.actual,'band');assert.equal(x.expectedLine,2);});
+test('diff detects missing and extra lines',()=>{assert.ok(t.linesDiff('A\nB','A').changed>=1);assert.ok(t.linesDiff('A','A\nB').changed>=1);});
+test('diff aligns CRLF and LF under strict mode',()=>{assert.equal(t.linesDiff('42\r\n','42\n','strict').changed,0);});
+test('diff does not hide an extra space with strict comparison',()=>{assert.ok(t.linesDiff('42\n','42 \n','strict').changed>0);const spans=t.characterSpans('42','43');assert.equal(spans.expectedDelta,'2');assert.equal(spans.actualDelta,'3');});
+test('diff truncates huge output safely',()=>{const x=t.linesDiff('a\n'.repeat(1000),'b\n'.repeat(1000));assert.equal(x.truncated,true);});
+test('beginner diagnostics recognize GCC errors in both languages',()=>{const s='C:/Test/main.cpp:9:13: error: expected ; before return\nC:/Test/main.cpp:11:3: error: foo was not declared in this scope';const zh=t.explainCompiler(s,'zh');assert.ok(zh.some(x=>x.id==='semicolon'&&x.line===9));assert.ok(zh.some(x=>x.id==='undeclared'&&x.line===11));assert.ok(t.explainCompiler(s,'en').some(x=>x.title==='Possibly missing semicolon'));});
+test('linker path guidance catches default-manifest failures',()=>{const x=t.explainCompiler('ld.exe: cannot find C:/Program Files/default-manifest.o');assert.ok(x.some(x=>x.id==='linker'));});

@@ -1,0 +1,12 @@
+Bundle target: WinLibs x86_64 UCRT, GCC 16.2.0 / MinGW-w64 14.0.0 (release r2)
+Publisher: https://github.com/brechtsanders/winlibs_mingw
+Origin: https://github.com/brechtsanders/winlibs_mingw/releases/tag/16.2.0posix-14.0.0-ucrt-r2
+Artifact: winlibs-x86_64-posix-seh-gcc-16.2.0-mingw-w64ucrt-14.0.0-r2.zip
+SHA256: d5dbafc4a170e762ca6143151ec918fb9e2c72736fb14cd704abebc6bdd5276a
+
+WinLibs is a compiler distribution containing components governed by independent
+open-source licences (GCC GPL with GCC Runtime Library Exception, MinGW-w64,
+and others). This builder preserves the full mingw64 tree, including upstream
+copyright and licence materials, and does not modify the compiler binaries.
+Before publishing installers to third parties, review applicable licence,
+notice, and corresponding-source obligations for each bundled component.

@@ -1,0 +1,98 @@
+name: Yanpb CodeLab Windows and macOS Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_NAME -ne "v$(node -p 'require("./package.json").version')") { throw 'Git tag and package version differ' }
+      - name: Build Setup and Portable
+        shell: powershell
+        run: .\scripts\build-windows.ps1 -ElectronSource Auto
+      - name: Verify Windows installers + checksums
+        shell: pwsh
+        run: |
+          $exes = @(Get-ChildItem dist-windows -Filter '*.exe')
+          if ($exes.Count -ne 2) { throw "Expected two EXEs, found $($exes.Count)" }
+          $exes | ForEach-Object { "$( (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() )  $($_.Name)" } | Set-Content dist-windows/SHA256SUMS-Windows.txt -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yanpb-windows
+          path: |
+            dist-windows/*.exe
+            dist-windows/SHA256SUMS-Windows.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  macos:
+    name: macOS ${{ matrix.arch }}
+    runs-on: macos-15
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, x64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: test "${GITHUB_REF_NAME}" = "v$(node -p 'require("./package.json").version')"
+      - name: Build macOS DMG + ZIP
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: bash ./build-macos.sh "${{ matrix.arch }}"
+      - name: Verify artifacts + checksums
+        run: |
+          test "$(find dist-macos -maxdepth 1 -name '*.dmg' | wc -l | tr -d ' ')" -eq 1
+          test "$(find dist-macos -maxdepth 1 -name '*.zip' | wc -l | tr -d ' ')" -eq 1
+          (cd dist-macos && shasum -a 256 *.dmg *.zip > SHA256SUMS-macOS-${{ matrix.arch }}.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yanpb-mac-${{ matrix.arch }}
+          path: |
+            dist-macos/*.dmg
+            dist-macos/*.zip
+            dist-macos/SHA256SUMS-macOS-${{ matrix.arch }}.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish versioned Windows + Mac packages
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: yanpb-*
+          path: release-assets
+          merge-multiple: true
+      - name: Create GitHub Release with all binaries
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ls -lh release-assets
+          # The release is published only if both Windows and Mac build jobs pass.
+          gh release create "$GITHUB_REF_NAME" release-assets/*.exe release-assets/*.dmg release-assets/*.zip release-assets/SHA256SUMS-*.txt \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --title "Yanpb CodeLab $GITHUB_REF_NAME" --generate-notes

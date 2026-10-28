@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Yanpb OJ Result Bridge",
+  "version": "1.3.0",
+  "description": "Watch official OJ submission outcomes in the browser and relay verified results to CodeLab (port 10045). No auto-submit.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "tabs",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:10045/*",
+    "https://atcoder.jp/*",
+    "https://codeforces.com/*",
+    "https://luogu.com.cn/*",
+    "https://www.atcoder.jp/*",
+    "https://www.codeforces.com/*",
+    "https://www.luogu.com.cn/*"
+  ],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Yanpb OJ Submit Bridge"
+  },
+  "minimum_chrome_version": "120"
+}

@@ -1,0 +1,29 @@
+# Dependencies, build outputs and downloaded toolchains
+node_modules/
+dist-windows/
+.DS_Store
+*.log
+.cache-winlibs/
+.cache-clangd/
+.cache-electron-verified/
+toolchain-runtime/
+toolchain-clangd/
+
+# Keep upstream toolchain license notices in Git, not the 261 MB binary tree.
+toolchain/*
+!toolchain/README.txt
+!toolchain/THIRD-PARTY.txt
+!toolchain/CLANGD-THIRD-PARTY.txt
+
+# Local IDE caches, secrets and user-specific configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+
+# macOS release artifacts
+dist-macos/
+# macOS release output
+*.app/

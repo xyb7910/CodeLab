@@ -1,0 +1,8 @@
+{
+  "extends": "../package.json",
+  "nsis": {
+    "useZip": false,
+    "differentialPackage": false,
+    "artifactName": "Yanpb-CodeLab-Compact-Setup-${version}-${arch}.${ext}"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "name": "yanpb-codelab-local",
+  "version": "5.10.3",
+  "private": true,
+  "description": "Yanpb CodeLab 5.10 — Windows and macOS competitive programming IDE",
+  "license": "UNLICENSED",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "build:win": "npm run prepare:clangd && npm run verify:clangd && npm run prepare:toolchain && npm run verify:toolchain && electron-builder --config build/network.builder.cjs --win nsis portable --x64",
+    "build:installer": "npm run prepare:clangd && npm run verify:clangd && npm run prepare:toolchain && npm run verify:toolchain && electron-builder --config build/network.builder.cjs --win nsis --x64",
+    "build:portable": "npm run prepare:clangd && npm run verify:clangd && npm run prepare:toolchain && npm run verify:toolchain && electron-builder --config build/network.builder.cjs --win portable --x64",
+    "verify:toolchain": "node build/verify-toolchain.cjs",
+    "prepare:toolchain": "node build/prepare-toolchain.cjs",
+    "build:compact": "npm run prepare:clangd && npm run verify:clangd && npm run prepare:toolchain && npm run verify:toolchain && electron-builder --config build/compact.builder.cjs --win nsis --x64",
+    "report:size": "node build/report-size.cjs",
+    "build:fast": "npm run build:installer",
+    "verify:clangd": "node build/verify-clangd.cjs",
+    "prepare:clangd": "node build/prepare-clangd.cjs",
+    "build:mac": "node build/verify-macos.cjs && electron-builder --config build/mac.builder.cjs --mac dmg zip",
+    "verify:mac": "node build/verify-macos.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "cn.yanpb.codelab.local",
+    "productName": "YanpbCodeLab",
+    "asar": true,
+    "directories": {
+      "output": "dist-windows",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "runner/**/*",
+      "mac-compat/**/*",
+      "build/icon.ico",
+      "package.json",
+      "!**/*.map",
+      "!**/tests/**/*",
+      "contest/**/*",
+      "cph/**/*",
+      "history/**/*",
+      "debug/**/*",
+      "language/**/*",
+      "oj/*.cjs"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "Yanpb-CodeLab-ZeroConfig-Setup-${version}-${arch}.${ext}",
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Yanpb CodeLab",
+      "uninstallDisplayName": "Yanpb CodeLab",
+      "differentialPackage": false,
+      "useZip": true,
+      "packElevateHelper": false
+    },
+    "portable": {
+      "artifactName": "Yanpb-CodeLab-ZeroConfig-Portable-${version}-${arch}.${ext}",
+      "useZip": false
+    },
+    "extraMetadata": {
+      "main": "electron/main.cjs"
+    },
+    "extraResources": [
+      {
+        "from": "toolchain-runtime/mingw64",
+        "to": "toolchain/mingw64",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "toolchain/THIRD-PARTY.txt",
+        "to": "toolchain/THIRD-PARTY.txt"
+      },
+      {
+        "from": "toolchain-runtime/clangd",
+        "to": "clangd",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "toolchain/CLANGD-THIRD-PARTY.txt",
+        "to": "clangd/THIRD-PARTY.txt"
+      },
+      {
+        "from": "oj/submit-extension",
+        "to": "oj-submit-extension"
+      }
+    ],
+    "compression": "normal",
+    "afterPack": "build/after-pack.cjs"
+  }
+}

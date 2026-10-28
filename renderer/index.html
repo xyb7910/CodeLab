@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file:; style-src 'self' 'unsafe-inline' file:; img-src 'self' data: file:; font-src 'self' data: file:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'"/>
+<title>Yanpb CodeLab — Local Edition</title>
+<link rel="stylesheet" href="vendor/codemirror/codemirror.css"/>
+<link rel="stylesheet" href="vendor/codemirror/addon/foldgutter.css"/>
+<link rel="stylesheet" href="vendor/codemirror/addon/show-hint.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body data-theme="dark">
+<svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+ <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 8-4 4 4 4M16 8l4 4-4 4m-3-10-2 20"/></symbol>
+ <symbol id="i-files" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5M3 7v14h12"/></symbol>
+ <symbol id="i-layer" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+ <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 13h7l-1 9 10-13h-7z"/></symbol>
+ <symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.8 3h4.4l.6 2.4 1.9.8 2.1-1.2 3 3-1.2 2.1.8 1.9 2.4.6v4.4l-2.4.6-.8 1.9 1.2 2.1-3 3-2.1-1.2-1.9.8-.6 2.4H9.8l-.6-2.4-1.9-.8-2.1 1.2-3-3 1.2-2.1-.8-1.9-2.4-.6v-4.4l2.4-.6.8-1.9-1.2-2.1 3-3 2.1 1.2 1.9-.8z" transform="translate(1 -1) scale(.92)"/><circle cx="12" cy="12" r="3"/></symbol>
+ <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m4 6 6 6-6 6m9 0h7"/></symbol>
+ <symbol id="i-run" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+ <symbol id="i-cloud-off" viewBox="0 0 24 24"><path d="M3 3 21 21M6 17H5a4 4 0 0 1-1-7.8M8 6.5a7 7 0 0 1 11 4A4 4 0 0 1 21 18h-3M8 18h6"/></symbol>
+ <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/></symbol>
+ <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 6v6h-6M3 18v-6h6M20 11a8 8 0 0 0-14-4l-3 5M4 13a8 8 0 0 0 14 4l3-5"/></symbol>
+ <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+ <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 15.5A9 9 0 0 1 8.5 3.6 9 9 0 1 0 20.4 15.5Z"/></symbol>
+ <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></symbol>
+ <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 16v5h16v-5"/></symbol>
+ <symbol id="i-max" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+ <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 3 7M3 18v-6h6M12 7v5l4 2"/></symbol>
+ <symbol id="i-lightning" viewBox="0 0 24 24"><path d="m13 2-9 11h7l-1 9 10-13h-7z"/></symbol>
+ <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 3h10v7a5 5 0 0 1-10 0zM7 6H3v2a5 5 0 0 0 4 5m10-7h4v2a5 5 0 0 1-4 5M12 15v5m-5 1h10"/></symbol>
+ <symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M9 4h6l1 2h4v15H4V6h4zM9 4h6v4H9zM8 13l2 2 5-5M8 19h8"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h14a2 2 0 0 1 2 2v15H6a2 2 0 0 1 0-4h14M6 4v13"/></symbol>
+ <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+ <symbol id="i-hard-drive" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 12h18M8 16h.01M12 16h.01"/></symbol>
+ <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18M3 9h18"/></symbol>
+</svg>
+<div class="app">
+  <header class="titlebar" aria-label="Application title bar">
+    <div class="title-left">
+      <div class="brand-logo" aria-hidden="true">Y<span>·</span></div>
+      <div class="brand-name">Yanpb <b>CodeLab</b></div>
+      <span class="brand-divider"></span>
+      <div class="competition-mode" id="competitionMode" role="group" aria-label="ICPC / OI">
+        <button class="mode-choice active" id="modeICPC" aria-pressed="true" title="ICPC / ACM (Alt+1)">ICPC</button>
+        <button class="mode-choice" id="modeOI" aria-pressed="false" title="OI / CSP (Alt+2)">OI</button>
+      </div>
+      <span class="version-tag">v5.10</span>
+    </div>
+    <div class="title-center">
+      <div class="title-breadcrumb" title="Current source file"><span data-i18n="workspaceShort">工作区</span><svg><use href="#i-chevron"/></svg><strong id="breadFile">main.cpp</strong></div>
+      <button class="top-search" id="paletteBtn" title="搜索文件、模板 / Ctrl+K"><svg><use href="#i-search"/></svg><span data-i18n="searchWorkspace">搜索工作区</span><kbd>Ctrl K</kbd></button>
+    </div>
+    <div class="title-actions">
+      <button class="pref-switch theme-toggle" id="themeBtn" aria-label="切换明暗模式" aria-pressed="false" title="切换亮暗主题 / Toggle light and dark (Ctrl+Alt+T)"><svg><use id="themeIcon" href="#i-sun"/></svg></button>
+      <button class="locale-switch" id="localeSwitch" title="中文 / English">中 / EN</button>
+      <button class="pref-switch" id="prefsBtn" title="DIY Settings"><svg><use href="#i-gear"/></svg></button>
+      <div class="window-controls" aria-label="Window controls">
+        <button class="window-button" id="minBtn" title="最小化">—</button><button class="window-button" id="maxBtn" title="最大化"><svg><use href="#i-max"/></svg></button><button class="window-button close" id="closeBtn" title="关闭"><svg><use href="#i-x"/></svg></button>
+      </div>
+    </div>
+  </header>
+  <div class="body-grid">
+    <nav class="activitybar" aria-label="功能导航">
+      <button class="activity active" data-nav="files" title="资源管理器"><svg><use href="#i-files"/></svg></button>
+      <button class="activity" data-nav="templates" title="算法模板管理"><svg><use href="#i-layer"/></svg></button>
+      <button class="activity" data-nav="contest" title="比赛模式 / Contest"><svg><use href="#i-trophy"/></svg></button>
+      <button class="activity hidden" data-nav="stress" title="程序对拍"><svg><use href="#i-lightning"/></svg></button>
+      <button class="activity hidden" data-nav="cph" id="cphBtn" title="Competitive Programming Helper"><svg><use href="#i-download"/></svg></button>
+      <span class="activity-spacer"></span>
+      <button class="activity" id="restoreLeftBtn" title="展开/折叠左栏 (Ctrl+B)"><svg><use href="#i-layout"/></svg></button>
+      <button class="activity hidden" id="settingsBtn" title="本地编译器设置"><svg><use href="#i-gear"/></svg></button>
+
+    </nav>
+    <div class="resize-handle left-resize" id="leftResize" role="separator" aria-label="Resize file explorer" aria-orientation="vertical" tabindex="0"></div><aside class="sidebar" id="sidebar">
+      <div class="sidebar-top"><span id="sidebarHeading" data-i18n="explorer">资源管理器</span><div class="sidebar-actions"><button class="subtle-icon" id="sidebarOpenBtn" title="打开文件 / Open file"><svg><use href="#i-folder"/></svg></button><button class="subtle-icon" id="newFileBtn" title="新建文件 / New file"><svg><use href="#i-plus"/></svg></button></div></div>
+      <div class="explorer-search-wrap"><svg><use href="#i-search"/></svg><input id="fileFilter" type="search" placeholder="筛选文件 / Filter files" aria-label="Filter files" autocomplete="off"></div>
+      <div class="project-head"><svg class="turn-chevron"><use href="#i-chevron"/></svg><span data-i18n="workspace">我的竞赛工作区</span><span class="project-count" id="fileCount">1</span></div>
+      <div class="sidebar-list" id="sidebarList"></div>
+      
+    </aside>
+    <div class="center-stack">
+      <div class="actionbar" aria-label="Build and run toolbar">
+        <div class="actionbar-left">
+          <div class="toolbar-config" aria-label="Build options">
+            <div class="dropdown-wrap"><label for="stdSelect" data-i18n="cppStd">C++ 标准</label><select id="stdSelect" title="C++ standard"><option>c++11</option><option>c++14</option><option selected>c++17</option><option>c++20</option><option>c++23</option></select></div>
+            <div class="dropdown-wrap compact"><label for="optSelect" data-i18n="optimization">优化等级</label><select id="optSelect" title="Optimization"><option>O0</option><option>O1</option><option selected>O2</option><option>O3</option><option>Os</option></select></div>
+          </div>
+          <button class="compiler-chip" id="compilerChip" title="编译器状态及配置"><span class="tiny-led"></span> 正在检查内置 GCC</button>
+        </div>
+        <div class="actionbar-right">
+          <div class="toolbar-contest-group hidden" aria-hidden="true"><button class="contest-quick mode-context-action" id="modeQuickBtn" title="Local submission history / CSP preflight"><svg><use href="#i-clipboard"/></svg><span id="modeQuickLabel">赛场</span></button>
+            <button class="contest-quick" id="contestCreateBtn" title="新建比赛 / Ctrl+Shift+N"><svg><use href="#i-trophy"/></svg><span data-i18n="contestMode">比赛模式</span></button>
+            <button class="contest-quick hidden" id="contestOverviewBtn" title="比赛指挥台"><svg><use href="#i-layout"/></svg><span data-i18n="contestDashboard">赛况</span></button>
+          </div>
+          <span class="toolbar-separator"></span>
+          <button class="button ghost" id="stopBtn" disabled title="停止 / F6"><span class="stop-square"></span><span data-i18n="stop">停止</span></button>
+          <button class="button secondary fast-oj-button" id="fastOjBtn" title="在浏览器打开官网提交页面 / Ctrl + Shift + U"><svg><use href="#i-run"/></svg><span>浏览器提交</span></button>
+          <button class="button secondary" id="allCasesBtn" title="运行全部样例 / F7"><svg><use href="#i-check"/></svg><span data-i18n="samples">样例测试</span></button>
+          <button class="button primary" id="runBtn" title="编译并运行 / F5"><svg><use href="#i-run"/></svg><span data-i18n="compileRun">编译并运行</span><kbd class="run-key">F5</kbd></button>
+          <div class="toolbar-more-anchor">
+            <button class="toolbar-more-btn" id="toolbarMoreBtn" aria-controls="toolbarMoreMenu" aria-expanded="false" aria-haspopup="menu" title="更多工具 / More actions"><svg><use href="#i-more"/></svg></button>
+            <div class="toolbar-popover hidden" id="toolbarMoreMenu" role="menu" aria-label="More tools">
+              <div class="popover-heading" data-i18n="contestTools">比赛工具</div>
+              <button class="popover-action hidden" id="contestNextBtn" role="menuitem"><svg><use href="#i-chevron"/></svg><span data-i18n="nextProblem">下一道题</span><kbd>Ctrl Alt →</kbd></button>
+              <button class="popover-action hidden" id="contestCheckBtn" role="menuitem"><svg><use href="#i-clipboard"/></svg><span data-i18n="submissionCheck">提交检查</span><kbd>F8</kbd></button>
+              <button class="popover-action" id="moreContestOpenBtn" role="menuitem"><svg><use href="#i-folder"/></svg><span data-i18n="openContest">打开比赛工作区</span></button>
+              <button class="popover-action" id="morePromptBtn" role="menuitem"><svg><use href="#i-code"/></svg><span>代码编辑提示词</span><kbd>Ctrl Alt P</kbd></button><button class="popover-action" id="moreCreateContestBtn" role="menuitem"><svg><use href="#i-plus"/></svg><span>新建比赛 / Create contest</span></button>
+              <div class="popover-rule"></div>
+              <button class="popover-action" id="moreStressBtn" role="menuitem"><svg><use href="#i-lightning"/></svg><span data-i18n="stressTest">程序对拍</span><kbd>F9</kbd></button>
+              <button class="popover-action hidden" id="ojSubmitBtn" role="menuitem"><svg><use href="#i-download"/></svg><span>浏览器 OJ 提交 / Browser OJ</span><kbd>Ctrl Alt U</kbd></button>
+              <button class="popover-action" id="moreCphBtn" role="menuitem"><svg><use href="#i-download"/></svg><span>CPH 样例接收</span></button>
+              <button class="popover-action" id="moreBrowserBridgeBtn" role="menuitem" title="浏览器判题结果插件配对"><svg><use href="#i-download"/></svg><span>OJ 浏览器连接 / 6 位授权码</span></button>
+              <button class="popover-action" id="moreShortcutsBtn" role="menuitem"><svg><use href="#i-bolt"/></svg><span data-i18n="shortcuts">快捷键</span></button>
+              <button class="popover-action hidden" id="moreSettingsBtn" role="menuitem"><svg><use href="#i-gear"/></svg><span data-i18n="personalization">个性配置</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <section id="contestRibbon" class="contest-ribbon hidden" aria-label="Active contest controls">
+        <div class="ribbon-identity"><span class="ribbon-symbol">◆</span><div class="ribbon-name"><strong id="ribbonName">Contest</strong><small id="ribbonPlatform">ICPC · LOCAL PRACTICE</small></div></div>
+        <span id="ribbonStatus" class="ribbon-status ready">未开始</span>
+        <button id="contestWorkspaceSwitch" class="ribbon-more contest-switch-control" title="Switch among open contest workspaces" aria-label="Switch contests">▤</button>
+        <div class="ribbon-clock" id="ribbonClock">00:00:00</div>
+        <span class="ribbon-divider"></span>
+        <label class="ribbon-task"><span id="ribbonTaskLabel">当前题目</span><select id="ribbonTaskSelect" aria-label="Select contest problem"></select></label>
+        <span id="ribbonProgress" class="ribbon-progress">0 / 4 已测</span>
+        <div class="ribbon-actions"><button id="ribbonMainAction" class="ribbon-primary">▶ 开始</button><button id="ribbonFinish" class="ribbon-finish">■ 结束</button><button id="ribbonOverview" class="ribbon-more" title="Contest overview">⋯</button></div>
+      </section>
+      <div class="filebar">
+        <div class="file-tabs" id="fileTabs"></div>
+        <div class="filebar-right"><span class="clang-status" id="clangdStatus" data-level="idle" title="Click to wake clangd / 点击启动诊断">clangd · on demand</span><button class="filebar-btn hidden debug-launch" id="startInteractiveDebug" title="GDB 调试 / F11"><svg><use href="#i-lightning"/></svg></button>
+          <button class="filebar-btn hidden" id="templateInsertBtn" title="快捷插入代码模板 · Ctrl+J"><svg><use href="#i-layer"/></svg></button>
+          <button class="filebar-btn hidden" id="openBtn" title="打开本地 C++ 文件 / Ctrl+O"><svg><use href="#i-folder"/></svg></button>
+          <button class="filebar-btn hidden" id="saveBtn" title="保存代码 / Ctrl+S"><svg><use href="#i-download"/></svg></button>
+          <span class="splitter"></span>
+          <div class="editor-more-anchor">
+            <button class="filebar-btn editor-more-btn" id="editorMoreBtn" title="版本与调试工具" aria-controls="editorMoreMenu" aria-expanded="false" aria-haspopup="menu"><svg><use href="#i-more"/></svg></button>
+            <div class="toolbar-popover editor-popover hidden" id="editorMoreMenu" role="menu" aria-label="Editor tools">
+              <div class="popover-heading" data-i18n="editorTools">编辑器工具</div>
+              <button class="popover-action" id="editorOpenFile" role="menuitem"><svg><use href="#i-folder"/></svg><span>打开文件 / Open</span><kbd>Ctrl O</kbd></button>
+              <button class="popover-action" id="editorSaveFile" role="menuitem"><svg><use href="#i-download"/></svg><span>保存文件 / Save</span><kbd>Ctrl S</kbd></button>
+              <button class="popover-action" id="editorDebugStart" role="menuitem"><svg><use href="#i-lightning"/></svg><span>GDB 调试</span><kbd>F11</kbd></button>
+              <button class="popover-action" id="editorInsertTemplate" role="menuitem"><svg><use href="#i-layer"/></svg><span>插入模板</span><kbd>Ctrl J</kbd></button>
+              <div class="popover-rule"></div>
+              <button class="popover-action" id="versionsBtn" role="menuitem"><svg><use href="#i-history"/></svg><span data-i18n="versionHistory">历史版本</span><kbd>Ctrl H</kbd></button>
+              <button class="popover-action" id="checkpointBtn" role="menuitem"><svg><use href="#i-check"/></svg><span data-i18n="checkpoint">创建检查点</span></button>
+              <button class="popover-action" id="traceBtn" role="menuitem"><svg><use href="#i-lightning"/></svg><span data-i18n="variableTrace">批量变量追踪</span><kbd>Trace</kbd></button>
+            </div>
+          </div>
+          <button class="filebar-btn hidden" id="restoreRightBtn" title="展开右侧测试面板 (Ctrl+Alt+R)"><svg><use href="#i-layout"/></svg></button>
+          
+        </div>
+      </div>
+      <div class="editor-contextbar" id="editorContextBar" data-scene="coding" role="toolbar" aria-label="Editor scene actions">
+        <div class="editor-scene-label"><span class="editor-scene-dot"></span><b id="sceneLabel">自由编程</b></div>
+        <span class="editor-scene-divider"></span><span class="editor-scene-detail" id="sceneDetail">本地 C++ 编辑</span>
+        <span class="editor-scene-meta" id="sceneMeta">本地工作区</span>
+        <div class="editor-scene-actions">
+          <span class="scene-indicator" id="sceneSampleCount">样例 2</span>
+          <span class="scene-indicator scene-issues" id="sceneIssueCount">问题 0</span>
+          <button id="sceneOjSubmitBtn" class="scene-btn hidden" aria-hidden="true" title="Submit current C++ code to an online judge · Ctrl+Alt+U"><svg><use href="#i-download"/></svg><span id="sceneOjSubmitText">在线 OJ</span></button>
+          <button id="sceneSnippetBtn" class="scene-btn hidden" title="Insert snippet · Ctrl+J"><svg><use href="#i-layer"/></svg><span id="sceneSnippetText">代码模板</span></button>
+          <button id="sceneNextBtn" class="scene-btn hidden" aria-hidden="true" title="Next problem · Ctrl+Alt+Right"><svg><use href="#i-chevron"/></svg><span id="sceneNextText">下一题</span></button>
+          <button id="scenePreflightBtn" class="scene-btn hidden" aria-hidden="true" title="CSP submission preflight · F8"><svg><use href="#i-clipboard"/></svg><span id="scenePreflightText">提交检查</span></button>
+          <button id="sceneDebugBtn" class="scene-btn hidden" title="Debug step over · F10"><svg><use href="#i-lightning"/></svg><span id="sceneDebugText">单步执行</span></button>
+        </div>
+      </div>
+      <section class="editor-pane"><div id="editorSearchBar" class="editor-search hidden" role="search" aria-label="Find in current file">
+        <span class="editor-search-icon">⌕</span><input type="text" id="editorSearchInput" placeholder="Find in current code…" aria-label="Search code" autocomplete="off" spellcheck="false"/>
+        <span id="editorSearchCount">0 / 0</span>
+        <button id="editorFindPrev" title="Previous match (Shift+F3)">↑</button><button id="editorFindNext" title="Next match (F3)">↓</button><button id="editorSearchClose" title="Close search (Esc)">×</button>
+      </div><div id="editor"></div><div class="code-watermark" id="modeWatermark" aria-hidden="true">ICPC</div></section>
+      <div class="editor-bottom"><span id="editorEditingHint" class="editor-editing-hint">CodeMirror · Open-source C++ editor</span><button class="editor-bottom-link hidden" id="shortcutsBtn" title="Keyboard and mouse shortcuts"><svg><use href="#i-bolt"/></svg><span data-i18n="shortcuts">快捷键</span></button><span class="editor-saved"><svg><use href="#i-check"/></svg><span id="saveState" data-i18n="autosaved">2 秒自动保存</span></span><span class="editor-bottom-right"><span id="cursorPos">Ln 1, Col 1</span><span id="characterCount">0 字符</span><span>UTF-8</span><span class="language-label">C++17</span></span></div>
+      <div id="terminalResize" class="terminal-resize" role="separator" aria-label="Resize bottom console" aria-orientation="horizontal" aria-valuemin="110" aria-valuemax="480" tabindex="0" title="Drag to resize console · Double-click to reset"><span></span></div>
+      <section class="terminal-pane" id="terminalPane">
+        <div class="terminal-title"><div class="terminal-title-left"><svg><use href="#i-terminal"/></svg><strong data-i18n="console">运行控制台</strong><span class="terminal-count" id="runNum">0</span></div><div class="terminal-tabs"><button class="terminal-tab active" data-term="output" data-i18n="stdout">标准输出</button><button class="terminal-tab" data-term="problems" id="problemsTab"><span data-i18n="problemsTab">问题</span> <span class="problem-count" id="problemCount">0</span></button><button class="terminal-tab" data-term="errors" data-i18n="compileInfo">编译日志</button><button class="terminal-tab" data-term="tests" data-i18n="testReport">样例报告</button><button class="terminal-tab" data-term="debug">调试器 GDB</button></div><div class="terminal-tools"><span id="resultState" class="result-pill neutral">● READY</span><span id="runtimeBadge" class="runtime-chip">— ms</span><button id="clearBtn" title="清除输出" class="term-icon">×</button><button id="collapseBtn" title="展开/折叠控制台" class="term-icon">⌄</button></div></div>
+        <div class="terminal-body" id="terminalOutput"><div class="terminal-empty"><div class="terminal-prompt">›_</div><div><strong data-i18n="readyToCode">一切就绪，开始写点代码吧。</strong><p data-i18n="readyDescription">点击「编译并运行」或按 Ctrl + Enter。输出将显示在这里。</p></div></div></div>
+      </section>
+      <footer class="statusbar"><div><span class="statusbar-logo">Y·</span> Yanpb CodeLab <span class="statusbar-sep">/</span> Local Edition</div><div class="statusbar-middle" id="statusText">准备就绪 · 本地模式</div><div><span class="statusbar-dot"></span> <span data-i18n="localRun">本机运行</span> <span class="statusbar-sep">·</span> <span data-i18n="author">作者：Yanpb</span></div></footer>
+    </div>
+    <div class="resize-handle right-resize" id="rightResize" role="separator" aria-label="Resize test panel" aria-orientation="vertical" tabindex="0"></div><aside class="inspector" id="inspector"><div class="inspector-heading"><div><strong id="modeInspectorTitle" data-i18n="inputTests">输入与测试</strong><p id="modeInspectorSubtitle">RUN CONFIGURATION</p></div><button id="toggleRightBtn" title="折叠侧栏"><svg><use href="#i-layout"/></svg></button></div><section id="modePanel" class="mode-panel" aria-live="polite"></section><div class="inspector-tabs"><button class="inspect-tab active" data-panel="input" data-i18n="stdin">标准输入</button><button class="inspect-tab" data-panel="cases"><span data-i18n="testCases">测试样例</span> <span id="caseCount">2</span></button></div><div class="inspector-content" id="inputPanel"><div class="field-head"><label for="stdin">STDIN <span data-i18n="stdin">标准输入</span></label><button class="flat-link" id="clearInputBtn" data-i18n="clear">清空</button></div><textarea id="stdin" class="standard-input" spellcheck="false" placeholder="输入 cin 需要读取的数据…" data-i18n-placeholder="stdinPlaceholder"></textarea><div class="callout"><div class="callout-icon">i</div><span><span data-i18n="stdinHint">程序将从这里读取标准输入。运行在本机，无需上传代码。</span></span></div><div class="side-field"><div class="field-head"><label data-i18n="timeout">运行超时</label><span class="mini-muted" data-i18n="notSandbox">非沙箱限制</span></div><div class="timeout-grid"><button class="timeout-btn active" data-timeout="2000" data-i18n="seconds2">2 秒</button><button class="timeout-btn" data-timeout="5000" data-i18n="seconds5">5 秒</button><button class="timeout-btn" data-timeout="10000" data-i18n="seconds10">10 秒</button></div></div><div class="side-card"><div class="side-card-top"><svg><use href="#i-bolt"/></svg><span data-i18n="gccIncluded">内置 GCC · 无需配置</span></div><p data-i18n="gccHint">Windows 完整安装版自带 G++，支持离线编译和对拍，无需设置环境变量。</p><button id="compilerSettingsLink"><span data-i18n="compilerSettings">查看编译器状态</span> <span>↗</span></button></div></div><div class="inspector-content hidden" id="casesPanel"><div class="cases-bar"><span data-i18n="sampleList">样例列表</span><button class="flat-link" id="addCaseBtn"><span data-i18n="add">＋ 添加</span></button></div><div class="sample-tools"><button id="pasteCompanionBtn" class="mini-outline" data-i18n="importJson">导入样例 JSON</button><button id="cphStateBtn" class="mini-outline" data-i18n="receiveSamples">接收器设置</button></div><div id="caseList" class="case-list"></div><div class="case-edit"><div class="field-head"><label for="caseInput" data-i18n="input">输入</label><button class="flat-link" id="useCaseInputBtn" title="Copy to STDIN">↳ STDIN</button><button class="flat-link danger" id="deleteCaseBtn" data-i18n="deleteCase">删除此组</button></div><textarea class="case-text" id="caseInput" spellcheck="false"></textarea><div class="field-head"><label for="caseOutput" data-i18n="expected">预期输出</label></div><textarea class="case-text" id="caseOutput" spellcheck="false"></textarea><p class="case-note" data-i18n="diffHint">比较时忽略末尾空白</p></div></div></aside>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<div id="modalBackdrop" class="modal-backdrop hidden"><div class="modal" id="modal"><div class="modal-header"><h2 id="modalTitle">设置</h2><button id="closeModal" class="subtle-icon"><svg><use href="#i-x"/></svg></button></div><div id="modalBody"></div></div></div>
+<script src="vendor/codemirror/codemirror.js"></script>
+<script src="vendor/codemirror/clike.js"></script>
+<script src="vendor/codemirror/addon/closebrackets.js"></script>
+<script src="vendor/codemirror/addon/matchbrackets.js"></script>
+<script src="vendor/codemirror/addon/active-line.js"></script>
+<script src="vendor/codemirror/addon/comment.js"></script>
+<script src="vendor/codemirror/addon/autorefresh.js"></script>
+<script src="vendor/codemirror/addon/foldcode.js"></script>
+<script src="vendor/codemirror/addon/foldgutter.js"></script>
+<script src="vendor/codemirror/addon/brace-fold.js"></script>
+<script src="vendor/codemirror/addon/show-hint.js"></script>
+<script src="vendor/codemirror/addon/anyword-hint.js"></script>
+<div class="official-result-notice hidden" id="officialResultNotice" role="status" aria-live="polite"><div class="oj-result-headline"></div><div class="oj-result-detail"></div></div>
+<script src="i18n.js"></script>
+<script src="companion-link.js"></script>
+<script src="learning-tools.js"></script>
+<script src="mode-logic.js"></script>
+<script src="template-logic.js"></script>
+<script src="contest-lifecycle.js"></script>
+<script src="editor-commands.js"></script>
+<script src="contest-workflow.js"></script>
+<script src="contest-registry.js"></script>
+<script src="inline-diagnostics.js"></script>
+<script src="diagnostic-engine.js"></script>
+<script src="file-actions.js"></script>
+<script src="editor-scene.js"></script>
+<script src="performance-policy.js"></script>
+<script src="live-debug.js"></script>
+<script src="code-completion.js"></script>
+<script src="sample-sounds.js"></script>
+<script src="editor-prompts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
