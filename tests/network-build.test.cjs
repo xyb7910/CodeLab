@@ -13,8 +13,11 @@ function invoke(env = {}) {
   return r;
 }
 test('builder v26 uses dynamic build config', () => {
-  assert.equal(pkg.version,'5.10.5');
-  for (const target of ['build:win','build:installer','build:portable']) assert.match(pkg.scripts[target], /--config build\/network.builder.cjs/);
+  assert.equal(pkg.version,'5.10.6');
+  for (const target of ['build:win','build:installer','build:portable']) {
+    assert.match(pkg.scripts[target], /--config build\/network.builder.cjs/);
+    assert.match(pkg.scripts[target], /--publish never/);
+  }
 });
 test('mirrored build must use electronDownload.mirror with HTTPS', () => {
   const r = invoke({YANPB_ELECTRON_MIRROR:'https://npmmirror.com/mirrors/electron'});

@@ -38,7 +38,7 @@ test('Extension never automatically clicks submit or requests login information'
 });
 test('Installer now includes in-app OJ browser and no longer requires browser helper',()=>{
  const pkg=require('../package.json');
- assert.equal(pkg.version,'5.10.5');
+ assert.equal(pkg.version,'5.10.6');
  assert.equal(pkg.build.extraResources.some(x=>x.from==='oj/browser-extension'),false);
  assert.ok(pkg.build.files.includes('oj/*.cjs'));
 });
