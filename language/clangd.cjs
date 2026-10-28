@@ -52,7 +52,7 @@ class ClangdSession extends EventEmitter {
   if(!this.ready||!this.version)throw Error('clangd document not available');
   if(!Number.isInteger(line)||line<0||line>100000||!Number.isInteger(character)||character<0||character>100000)throw Error('Invalid completion position');
   if(version!==this.version)return {stale:true,items:[]};
-  const data=await this.request('textDocument/completion',{textDocument:{uri:this.docUri},position:{line,character},context:{triggerKind:1}},3500);
+  const data=await this.request('textDocument/completion',{textDocument:{uri:this.docUri},position:{line,character},context:{triggerKind:1}},10000);
   if(version!==this.version||!this.ready)return {stale:true,items:[]};
   return {stale:false,items:Array.isArray(data)?data:data?.items||[]};
  }

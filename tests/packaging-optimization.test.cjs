@@ -6,7 +6,7 @@ const {keep,stage,sizeTree}=require('../build/prepare-toolchain.cjs');
 const {pruneElectronLocales}=require('../build/after-pack.cjs');
 
 test('Fast installer and compact installer have explicit trade-off',()=>{
- assert.equal(pkg.version,'5.10.4');
+ assert.equal(pkg.version,'5.10.5');
  assert.equal(pkg.build.nsis.useZip,true);
  assert.equal(pkg.build.nsis.differentialPackage,false);
  const compact=require('../build/compact.builder.cjs');

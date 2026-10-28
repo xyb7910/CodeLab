@@ -9,7 +9,7 @@ const {normalizeLineEndings}=require('./test-utils.cjs');
 const root=path.resolve(__dirname,'..');
 const pkg=require('../package.json');
 test('Windows installer explicitly packages the full MinGW64 tree',()=>{
-  assert.equal(pkg.version,'5.10.4');
+  assert.equal(pkg.version,'5.10.5');
   assert.equal(pkg.build.productName, 'YanpbCodeLab', 'New default installer directory must have no spaces');
   assert.ok(pkg.build.extraResources.some(o=>o.from==='toolchain-runtime/mingw64' && o.to==='toolchain/mingw64'));
   assert.match(pkg.scripts['build:win'],/verify:toolchain/);

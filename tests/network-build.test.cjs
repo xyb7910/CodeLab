@@ -13,7 +13,7 @@ function invoke(env = {}) {
   return r;
 }
 test('builder v26 uses dynamic build config', () => {
-  assert.equal(pkg.version,'5.10.4');
+  assert.equal(pkg.version,'5.10.5');
   for (const target of ['build:win','build:installer','build:portable']) assert.match(pkg.scripts[target], /--config build\/network.builder.cjs/);
 });
 test('mirrored build must use electronDownload.mirror with HTTPS', () => {
