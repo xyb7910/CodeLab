@@ -36,7 +36,8 @@ class ClangdSession extends EventEmitter {
   const doc=path.join(this.workspace,'active.cpp');await fs.writeFile(doc,'// clangd workspace\n');
   const cmd=[this.compiler,`-std=${this.standard}`, ...(process.platform==='darwin'?mac.macCompileFlags():[]),' -x'.trim(),'c++',doc];await fs.writeFile(path.join(this.workspace,'compile_commands.json'),JSON.stringify([{directory:this.workspace,file:doc,arguments:cmd}],null,2));
   this.docUri=pathToFileURL(doc).href;
-  const binary=this.binary||(process.platform==='win32'?bundledPath():process.platform==='darwin'?mac.findMacTool('clangd'):'clangd');
+  const bundled=bundledPath();
+  const binary=this.binary||(process.platform==='win32'?(fsSync.existsSync(bundled)?bundled:'clangd'):process.platform==='darwin'?mac.findMacTool('clangd'):'clangd');
   const extra=['--background-index=false','--clang-tidy=false',`--compile-commands-dir=${this.workspace}`];
   if(process.platform==='win32' && path.isAbsolute(this.compiler))extra.push(`--query-driver=${this.compiler.replace(/\\/g,'/')}`);
   this.proc=spawn(binary,extra,{stdio:['pipe','pipe','pipe'],windowsHide:true,shell:false});

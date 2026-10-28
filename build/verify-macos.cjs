@@ -11,7 +11,7 @@ function main(){
  try{
   const source=path.join(tmp,'smoke.cpp'),binary=path.join(tmp,'smoke');
   fs.writeFileSync(source,'#include <bits/stdc++.h>\nusing namespace std;int main(){vector<int> a={2026};cout<<a[0]<<"\\n";}\n','utf8');
-  const flags=['-std=c++17','-O2','-I',path.join(__dirname,'..','mac-compat'),source,'-o',binary];
+  const flags=['-std=c++17','-O2',...mac.macCompileFlags(),source,'-o',binary];
   const build=cp.spawnSync(compiler,flags,{timeout:60000,encoding:'utf8'});
   if(build.status!==0||build.error)throw Error('Apple Clang compilation failed: '+(build.stderr||build.error?.message||''));
   const run=cp.spawnSync(binary,[],{timeout:5000,encoding:'utf8'});
