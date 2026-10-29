@@ -53,7 +53,7 @@ test('Unauthenticated or unapproved jobs cannot expose source',()=>setup(async({
 }));
 test('Build bundles the browser extension and replaces embedded submit windows',()=>{
  const fs=require('node:fs'),p=require('node:path');const pkg=require('../package.json');
- assert.equal(pkg.version,'5.10.9');assert.ok(pkg.build.extraResources.some(x=>x.from==='oj/submit-extension'));
+ assert.equal(pkg.version,'5.10.10');assert.ok(pkg.build.extraResources.some(x=>x.from==='oj/submit-extension'));
  const app=fs.readFileSync(p.join(__dirname,'../renderer/app.js'),'utf8');
  assert.match(app,/async function prepareOfficialSubmission\(\)\{return openBrowserSubmission\(\);\}/);
  assert.doesNotMatch(app,/id="ojOpenEmbedded"/);

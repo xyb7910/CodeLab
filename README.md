@@ -1,4 +1,4 @@
-# Yanpb CodeLab v5.10.9 — 独立浏览器判题插件
+# Yanpb CodeLab v5.10.10 — 独立浏览器判题插件
 
 Chrome/Edge 插件现已作为独立版本 `Yanpb OJ Result Bridge 2.0.0` 发布。GitHub Release 同时提供插件 ZIP、Windows 安装版/便携版与 macOS ARM64/Intel 安装包；插件仍随 IDE 离线附带。
 
