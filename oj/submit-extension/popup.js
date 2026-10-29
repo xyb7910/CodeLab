@@ -1,6 +1,7 @@
 'use strict';
 const status=document.getElementById('status'),pairArea=document.getElementById('pairArea');
-function refresh(){chrome.runtime.sendMessage({op:'status'},reply=>{if(chrome.runtime.lastError){status.textContent='后台扩展无法访问：'+chrome.runtime.lastError.message;return;}status.textContent=reply?.status||'未连接';document.getElementById('diagnostics').textContent=reply?.detail||'检查 127.0.0.1:10045 / CodeLab 授权状态。';pairArea.style.display=reply?.paired?'none':'block';});}
+document.getElementById('version').textContent='Browser Extension v'+chrome.runtime.getManifest().version+' · Chrome / Edge';
+function refresh(){chrome.runtime.sendMessage({op:'status'},reply=>{if(chrome.runtime.lastError){status.textContent='后台扩展无法访问：'+chrome.runtime.lastError.message;return;}status.textContent=reply?.status||'未连接';status.closest('.card').classList.toggle('ready',reply?.status?.startsWith('✓'));document.getElementById('diagnostics').textContent=reply?.detail||'检查 127.0.0.1:10045 / CodeLab 授权状态。';pairArea.style.display=reply?.paired?'none':'block';});}
 document.getElementById('pair').onclick=()=>{
  const pin=document.getElementById('pin').value.trim();if(!/^\d{6}$/.test(pin)){status.textContent='请输入 6 位授权码';return;}
  chrome.runtime.sendMessage({op:'pair',pin},reply=>{status.textContent=reply?.error||reply?.status||'未知状态';refresh();});

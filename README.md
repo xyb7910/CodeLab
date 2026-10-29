@@ -1,3 +1,11 @@
+# Yanpb CodeLab v5.10.9 — 独立浏览器判题插件
+
+Chrome/Edge 插件现已作为独立版本 `Yanpb OJ Result Bridge 2.0.0` 发布。GitHub Release 同时提供插件 ZIP、Windows 安装版/便携版与 macOS ARM64/Intel 安装包；插件仍随 IDE 离线附带。
+
+插件负责监听 Codeforces、AtCoder、洛谷官方结果，通过一次性六位 PIN 与本机 IDE 配对，不读取账号密码或 Cookie，也不会自动点击提交。安装说明见 [`oj/submit-extension/README.md`](oj/submit-extension/README.md)。
+
+---
+
 # Yanpb CodeLab v5.10.3 — 官方 AC/WA 浏览器回传修复
 
 本版修复 Chrome/Edge 扩展监听中的动态状态更新、MV3 后台休眠及 Submission ID 识别遗漏问题。需同时更新 CodeLab 源码和 Yanpb OJ Result Bridge **v1.3.0** 扩展；Competitive Companion 的题目导入仍使用 10043，判题回传继续使用 10045。

@@ -10,6 +10,25 @@ permissions:
   contents: write
 
 jobs:
+  browser_extension:
+    name: Standalone Chrome + Edge extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and package extension
+        run: |
+          set -euo pipefail
+          version="$(node -p 'require("./oj/submit-extension/manifest.json").version')"
+          mkdir -p dist-extension
+          (cd oj/submit-extension && zip -9 -r "../../dist-extension/Yanpb-OJ-Result-Bridge-${version}.zip" . -x '*.DS_Store')
+          (cd dist-extension && sha256sum *.zip > SHA256SUMS-Browser-Extension.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yanpb-browser-extension
+          path: dist-extension/*
+          if-no-files-found: error
+          retention-days: 14
+
   windows:
     runs-on: windows-2022
     timeout-minutes: 120
@@ -79,7 +98,7 @@ jobs:
   publish:
     name: Publish versioned Windows + Mac packages
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [windows, macos]
+    needs: [browser_extension, windows, macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

@@ -25,7 +25,7 @@ test('macOS packaging excludes Windows MinGW runtime, includes compatibility res
  assert.match(text,/extraResources/);assert.match(text,/mac-compat/);assert.match(text,/dmg/);assert.match(text,/zip/);
  assert.match(text,/const \{extraResources,\.\.\.shared\}=base;/);
  assert.match(fs.readFileSync(path.join(root,'.github','workflows','windows-build.yml'),'utf8'),/macos:\s*\n/);
- assert.equal(pkg.version,'5.10.8');assert.ok(fs.existsSync(path.join(root,'build','icon.icns')));
+ assert.equal(pkg.version,'5.10.9');assert.ok(fs.existsSync(path.join(root,'build','icon.icns')));
 });
 test('macOS runner verification smoke test and signing guidance included',()=>{
  assert.match(fs.readFileSync(path.join(root,'build','verify-macos.cjs'),'utf8'),/xcode-select|findMacTool/);

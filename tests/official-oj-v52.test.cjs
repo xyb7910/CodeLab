@@ -40,7 +40,7 @@ test('Browser only attempts an official click behind user-directed one-click gua
  assert.match(browserFile,/fillSource/);
 });
 test('Electron bridge packages official adapters and no longer needs extension pairing',()=>{
- const pkg=require('../package.json');assert.equal(pkg.version,'5.10.8');assert.ok(pkg.build.files.includes('oj/*.cjs'));
+ const pkg=require('../package.json');assert.equal(pkg.version,'5.10.9');assert.ok(pkg.build.files.includes('oj/*.cjs'));
  assert.ok(!pkg.build.extraResources.some(x=>x.to==='oj-browser-extension'));
  const main=fs.readFileSync(path.join(__dirname,'../electron/main.cjs'),'utf8');assert.match(main,/local:ojOpenInApp/);assert.match(main,/local:ojPollCodeforces/);assert.doesNotMatch(main,/local:ojPrepare/);
 });

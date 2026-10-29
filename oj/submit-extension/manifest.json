@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Yanpb OJ Result Bridge",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Watch official OJ submission outcomes in the browser and relay verified results to CodeLab (port 10045). No auto-submit.",
   "permissions": [
     "storage",
@@ -25,6 +25,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_title": "Yanpb OJ Submit Bridge"
+  },
+  "icons": {
+    "48": "icons/48.png"
   },
   "minimum_chrome_version": "120"
 }
