@@ -4,21 +4,21 @@
 // problem URL and an independently identifiable status cell.
 function inspectVerdictPage(){
  const h=location.hostname.toLowerCase();
- const platform=['atcoder.jp','www.atcoder.jp'].includes(h)?'atcoder':['www.luogu.com.cn','luogu.com.cn'].includes(h)?'luogu':null;
+ const platform=['codeforces.com','www.codeforces.com'].includes(h)?'codeforces':['atcoder.jp','www.atcoder.jp'].includes(h)?'atcoder':['www.luogu.com.cn','luogu.com.cn'].includes(h)?'luogu':null;
  if(!platform)return null;
  const normalize=s=>(s||'').replace(/\s+/g,' ').trim();
- const accepted=/^(?:AC|WA|TLE|MLE|RE|CE|OLE|PE|WJ|Judging|Pending|Accepted|Wrong Answer|Time Limit Exceeded|Memory Limit Exceeded|Runtime Error|Compilation Error|Compile Error|Output Limit Exceeded|Running|Waiting|Partially Correct)$/i;
+ const accepted=/^(?:AC|WA|TLE|MLE|RE|CE|OLE|PE|IE|UKE|WJ|Judging|Pending|Testing|In queue|Accepted|Wrong Answer|Time Limit Exceeded|Memory Limit Exceeded|Runtime Error|Compilation Error|Compile Error|Output Limit Exceeded|Running|Waiting(?: for Judging)?|Partially Correct|System Error|Internal Error|Idleness Limit Exceeded|Security Violated|Skipped|Rejected|Failed|Challenged)$/i;
  const statuses=[];
  function consider(node){if(!node)return;const val=normalize(node.textContent);if(accepted.test(val))statuses.push(val);}
  document.querySelectorAll('#judge-status,[data-submission-status],.judge-status,.submission-status,.record-status').forEach(consider);
  // AtCoder normally renders the verdict in the Status row of the details table.
  for(const cell of document.querySelectorAll('th,td,dt')){
-  if(!/^(?:Status|Judge Status|Result|判定|评测状态|状态)$/i.test(normalize(cell.textContent)))continue;
+  if(!/^(?:Status|Judge Status|Result|Verdict|判定|评测状态|状态)$/i.test(normalize(cell.textContent)))continue;
   const next=cell.nextElementSibling;if(next){const nodes=[next,...next.querySelectorAll('span,.label')];nodes.forEach(consider);}
  }
  const distinct=[...new Set(statuses)];if(distinct.length!==1)return null;
  const links=[];
- const target=platform==='atcoder'?/^\/contests\/[a-zA-Z0-9_-]+\/tasks\/[a-zA-Z0-9_-]+\/?$/:/^\/problem\/[A-Za-z0-9_-]+\/?$/;
+ const target=platform==='codeforces'?/^\/(?:contest|gym)\/\d+\/problem\/[A-Za-z0-9_-]+\/?$/:platform==='atcoder'?/^\/contests\/[a-zA-Z0-9_-]+\/tasks\/[a-zA-Z0-9_-]+\/?$/:/^\/problem\/[A-Za-z0-9_-]+\/?$/;
  // Prefer the task/problem row, not the global navigation bar listing other tasks.
  const key=/^(?:Task|Problem|题目|问题)$/i;
  for(const cell of document.querySelectorAll('th,td,dt')){

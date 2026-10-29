@@ -16,6 +16,7 @@ test('Official submission detail URLs must be exact platform patterns',()=>{
 test('Official verdict parsing never treats absent text as accepted',()=>{
  for(const empty of [null,'','Contest Problems','Submission detail'])assert.equal(api.normalizeOfficialStatus(empty),null);
  assert.equal(api.normalizeOfficialStatus('Wrong Answer'),'WA');assert.equal(api.normalizeOfficialStatus('Accepted'),'AC');assert.equal(api.normalizeOfficialStatus('Waiting'),'PENDING');
+ assert.equal(api.normalizeOfficialStatus('Waiting for Judging'),'PENDING');assert.equal(api.normalizeOfficialStatus('Internal Error'),'IE');assert.equal(api.normalizeOfficialStatus('Idleness Limit Exceeded'),'IDLENESS');
 });
 test('Codeforces official API record must match exact submission ID and contest ID',()=>{
  const res={status:'OK',result:[{id:987,contestId:371,verdict:'OK',problem:{index:'B'},passedTestCount:42,timeConsumedMillis:17,memoryConsumedBytes:999999}]};
@@ -39,7 +40,7 @@ test('Browser only attempts an official click behind user-directed one-click gua
  assert.match(browserFile,/fillSource/);
 });
 test('Electron bridge packages official adapters and no longer needs extension pairing',()=>{
- const pkg=require('../package.json');assert.equal(pkg.version,'5.10.7');assert.ok(pkg.build.files.includes('oj/*.cjs'));
+ const pkg=require('../package.json');assert.equal(pkg.version,'5.10.8');assert.ok(pkg.build.files.includes('oj/*.cjs'));
  assert.ok(!pkg.build.extraResources.some(x=>x.to==='oj-browser-extension'));
  const main=fs.readFileSync(path.join(__dirname,'../electron/main.cjs'),'utf8');assert.match(main,/local:ojOpenInApp/);assert.match(main,/local:ojPollCodeforces/);assert.doesNotMatch(main,/local:ojPrepare/);
 });

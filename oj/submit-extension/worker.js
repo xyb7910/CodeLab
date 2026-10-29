@@ -109,7 +109,8 @@ async function getConnection(){
  catch(e){const msg=String(e.message||e);return {status:/not authenticated|different browser extension|401|403/.test(msg)?'授权失效，需要重新配对':'本机桥接不可用',paired:!/not authenticated|different browser extension|401|403/.test(msg),detail:msg+'；检查 CodeLab 是否运行，以及端口 10045 是否被占用。'};}
 }
 async function inspectOfficialVerdict(tabId,ctx,url){
- if(ctx.platform==='codeforces'||verdictInspections.has(tabId))return; // Codeforces is verified by API.
+ if(ctx.finalVerdict)return;
+ if(verdictInspections.has(tabId))return;
  verdictInspections.add(tabId);
  try{const [result]=await chrome.scripting.executeScript({target:{tabId},world:'MAIN',func:inspectVerdictPage});
   const raw=result?.result;
@@ -117,8 +118,12 @@ async function inspectOfficialVerdict(tabId,ctx,url){
   // Query strings, locale parameters and anchors don't change the record identity.
   const actual=new URL(raw.currentUrl),expected=new URL(url);
   if(actual.origin!==expected.origin||actual.pathname.replace(/\/$/,'')!==expected.pathname.replace(/\/$/,''))return;
+  if(ctx.lastVerdict===raw.text&&Date.now()-(ctx.lastVerdictAt||0)<25000)return;
   const reply=await post('/event',{id:ctx.jobId,kind:'verdict',url,problemUrl:raw.urls[0],verdict:raw.text},ctx.token);
   if(reply?.ok){
+   ctx.lastVerdict=raw.text;ctx.lastVerdictAt=Date.now();
+   if(/^(?:AC|WA|TLE|MLE|RE|CE|OLE|PE|IE|UKE|Accepted|Wrong Answer|Time Limit Exceeded|Memory Limit Exceeded|Runtime Error|Compilation Error|Compile Error|Output Limit Exceeded|Partially Correct|System Error|Internal Error|Idleness Limit Exceeded|Security Violated|Skipped|Rejected|Failed|Challenged)$/i.test(raw.text))ctx.finalVerdict=raw.text;
+   await saveTabs();
    lastStatus='官方状态已同步：'+raw.text+' · '+ctx.platform.toUpperCase();
    await chrome.storage.local.set({lastOfficialSync:{platform:ctx.platform,verdict:raw.text,url,at:Date.now()}}).catch(()=>{});
   }
@@ -153,7 +158,7 @@ async function tryReceipt(tabId,url){
 // Lightweight MutationObserver wakes the MV3 service worker when a dynamic OJ
 // replaces Judging with AC. No polling of hidden account data or cookies.
 async function installResultObserver(tabId,ctx){
- if(ctx.platform==='codeforces'||observerTabs.has(tabId))return;
+ if(observerTabs.has(tabId))return;
  try{
   await chrome.scripting.executeScript({target:{tabId},files:['detail-observer.js']});
   observerTabs.add(tabId);

@@ -39,6 +39,18 @@ test('Official AtCoder/Luogu verdict is verified only with matching detail probl
  let r=await s.applyVerdict(x.id,{platform:'atcoder',id:'101',confirmed:true,problemId:'abc371_a',verdict:'AC'});assert.equal(r.officialVerified,false);
  r=await s.applyVerdict(x.id,{platform:'atcoder',id:'101',confirmed:true,problemId:'abc371_c',verdict:'AC'});assert.equal(r.officialVerified,true);
 }));
+test('Codeforces detail-page verdict can be verified without a handle',()=>fresh(async s=>{
+ const x=await s.prepare({url:'https://codeforces.com/contest/1976/problem/B',code});await s.linkReceipt(x.id,cf);
+ let r=await s.applyVerdict(x.id,{platform:'codeforces',id:'112233',confirmed:true,problemId:'1976/B',verdict:'PENDING'});
+ assert.equal(r.state,'judging');assert.equal(r.officialVerified,false);
+ r=await s.applyVerdict(x.id,{platform:'codeforces',id:'112233',confirmed:true,problemId:'1976/B',verdict:'AC'});
+ assert.equal(r.state,'verified');assert.equal(r.officialVerified,true);assert.equal(r.confidence,'official-detail-problem-matched');
+}));
+test('Codeforces API result keeps judge metrics in the local ledger',()=>fresh(async s=>{
+ const x=await s.prepare({url:'https://codeforces.com/contest/1976/problem/B',code});await s.linkReceipt(x.id,cf);
+ const r=await s.applyVerdict(x.id,{platform:'codeforces',id:'112233',confirmed:true,contestId:1976,problem:'B',verdict:'WA',rawVerdict:'WRONG_ANSWER',passedTests:17,timeMs:124,memoryBytes:1048576});
+ assert.equal(r.officialVerified,true);assert.equal(r.passedTests,17);assert.equal(r.timeMs,124);assert.equal(r.memoryBytes,1048576);assert.equal(r.rawVerdict,'WRONG_ANSWER');
+}));
 test('Expired or idle prepared task cannot auto-claim arbitrary record',()=>{
  const x={platform:'codeforces',contestId:'1976',index:'B',problemId:'1976/B',state:'form_filled',createdAt:Date.now()-40*60000};
  const d=decideAutoReceipt(x,[{url:cf,source:'detail'}]);assert.equal(d.status,'suggested');assert.equal(d.reason,'not-recent-filled-task');

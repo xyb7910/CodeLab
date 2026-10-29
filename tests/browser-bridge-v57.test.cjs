@@ -26,6 +26,15 @@ test('A frozen source is delivered only once to the paired browser',()=>setup(as
  assert.equal(received[0].kind,'receipt');assert.equal(received[0].url,'https://codeforces.com/contest/1976/submission/555');
  assert.equal((await req('/event',{id,kind:'blocked'},token)).status,409);
 }));
+test('Codeforces browser detail returns verdict only for the exact linked problem',()=>setup(async({b,req,received})=>{
+ const token=(await req('/pair',{pin:b.pair().pin})).body.token;
+ const id=crypto.randomUUID();b.queue({id,problemUrl:CF,code:'int main(){}'});await req('/next',{},token);
+ const receipt='https://codeforces.com/contest/1976/submission/556';
+ assert.equal((await req('/event',{id,kind:'receipt',url:receipt},token)).status,200);
+ assert.equal((await req('/event',{id,kind:'verdict',url:receipt,problemUrl:'https://codeforces.com/contest/1976/problem/A',verdict:'Accepted'},token)).status,403);
+ assert.equal((await req('/event',{id,kind:'verdict',url:receipt,problemUrl:CF,verdict:'Testing'},token)).status,200);
+ assert.equal(received.at(-1).verdict,'Testing');
+}));
 test('AtCoder accepts only same-contest official record; other origins cannot access jobs',()=>setup(async({b,req})=>{
  const token=(await req('/pair',{pin:b.pair().pin})).body.token;
  const id=crypto.randomUUID();b.queue({id,problemUrl:A,code:'int main(){}'});
@@ -44,7 +53,7 @@ test('Unauthenticated or unapproved jobs cannot expose source',()=>setup(async({
 }));
 test('Build bundles the browser extension and replaces embedded submit windows',()=>{
  const fs=require('node:fs'),p=require('node:path');const pkg=require('../package.json');
- assert.equal(pkg.version,'5.10.7');assert.ok(pkg.build.extraResources.some(x=>x.from==='oj/submit-extension'));
+ assert.equal(pkg.version,'5.10.8');assert.ok(pkg.build.extraResources.some(x=>x.from==='oj/submit-extension'));
  const app=fs.readFileSync(p.join(__dirname,'../renderer/app.js'),'utf8');
  assert.match(app,/async function prepareOfficialSubmission\(\)\{return openBrowserSubmission\(\);\}/);
  assert.doesNotMatch(app,/id="ojOpenEmbedded"/);

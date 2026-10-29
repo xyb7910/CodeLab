@@ -18,7 +18,6 @@ function safeMatch(job,detail){
      if(detail.kind==='verdict') {
        const {normalizeOfficialStatus}=require('./official-session.cjs');
        const {routeProblem}=require('./submit-bridge.cjs');
-       if(!['atcoder','luogu'].includes(job.platform))return false;
        if(!normalizeOfficialStatus(detail.verdict)||!detail.problemUrl)return false;
        const target=routeProblem(detail.problemUrl);
        return target.platform===job.platform&&target.problemId===job.problemId;

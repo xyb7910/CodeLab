@@ -1161,8 +1161,9 @@ function officialVerdictPresentation(record){
  const verified=record?.officialVerified===true;
  const judging=record?.state==='judging'&&record?.confidence&&record?.receipt;
  const raw=verified?String(record.verdict||'').toUpperCase():judging?'PENDING':'';
- const verdict=raw==='AC'?'AC':['WA','TLE','MLE','RE','CE','OLE','PE'].includes(raw)?raw:['PENDING','TESTING','SUBMITTED'].includes(raw)?'JUDGING':'UNVERIFIED';
- const labels={AC:'官方 AC · Accepted',WA:'官方 WA · Wrong Answer',TLE:'官方 TLE · 超时',MLE:'官方 MLE · 内存超限',RE:'官方 RE · 运行错误',CE:'官方 CE · 编译错误',OLE:'官方 OLE · 输出超限',PE:'官方 PE · 格式错误',JUDGING:'官方评测中',UNVERIFIED:'等待官方核对'};
+ const failures=['WA','TLE','MLE','RE','CE','OLE','PE','IE','UKE','IDLENESS','SECURITY','SKIPPED','REJECTED','FAILED','CHALLENGED'];
+ const verdict=raw==='AC'?'AC':failures.includes(raw)?raw:raw==='PARTIAL'?'PARTIAL':['PENDING','TESTING','SUBMITTED'].includes(raw)?'JUDGING':'UNVERIFIED';
+ const labels={AC:'官方 AC · Accepted',WA:'官方 WA · Wrong Answer',TLE:'官方 TLE · 超时',MLE:'官方 MLE · 内存超限',RE:'官方 RE · 运行错误',CE:'官方 CE · 编译错误',OLE:'官方 OLE · 输出超限',PE:'官方 PE · 格式错误',IE:'官方 IE · 系统错误',UKE:'官方 UKE · 未知错误',IDLENESS:'官方失败 · 空闲超时',SECURITY:'官方失败 · 安全限制',SKIPPED:'官方结果 · 已跳过',REJECTED:'官方结果 · 已拒绝',FAILED:'官方结果 · 失败',CHALLENGED:'官方结果 · Hack 成功',PARTIAL:'官方结果 · 部分正确',JUDGING:'官方评测中',UNVERIFIED:'等待官方核对'};
  return {verdict,label:labels[verdict],tone:verdict==='AC'?'success':verdict==='JUDGING'?'pending':verdict==='UNVERIFIED'?'neutral':'danger',verified};
 }
 function renderOfficialVerdictHero(row){
@@ -1195,7 +1196,8 @@ async function refreshFastLedger(){
   h.append(title,tag);
   const verdictCard=document.createElement('div');const verdictUI=officialVerdictPresentation(rec);verdictCard.className='fast-verdict-pill '+verdictUI.tone;verdictCard.textContent=verdictUI.label;
   const detail=document.createElement('small');detail.textContent=rec.fileName+' · '+new Date(rec.createdAt).toLocaleString()+' · SHA256 '+rec.sourceHash.slice(0,10);
-  const sub=document.createElement('small');sub.textContent=rec.verdict?(rec.officialVerified?'官方记录已核对：':'官方记录题目待核对：')+rec.verdict:rec.receipt?'自动识别 Submission ID #'+rec.receipt.id+' · 判题待核对':rec.detectedCandidates?.length?'识别到 '+rec.detectedCandidates.length+' 条记录候选，待选择':'尚未识别到官方提交记录';
+  const metrics=[Number.isInteger(rec.passedTests)?'通过 '+rec.passedTests+' 个测试':null,Number.isFinite(rec.timeMs)?rec.timeMs+' ms':null,Number.isFinite(rec.memoryBytes)?Math.round(rec.memoryBytes/1024)+' KB':null].filter(Boolean).join(' · ');
+  const sub=document.createElement('small');sub.textContent=(rec.verdict?(rec.officialVerified?'官方记录已核对：':'官方记录题目待核对：')+rec.verdict:rec.receipt?'自动识别 Submission ID #'+rec.receipt.id+' · 判题待核对':rec.detectedCandidates?.length?'识别到 '+rec.detectedCandidates.length+' 条记录候选，待选择':'尚未识别到官方提交记录')+(metrics?' · '+metrics:'');
   const actions=document.createElement('div');actions.className='fast-row-actions';
   const pick=document.createElement('button');pick.textContent=lang()==='en'?'Inspect':'查看/核对';pick.onclick=()=>{
    fastActiveId=rec.id;fastActivePlatform=rec.platform;
@@ -1392,17 +1394,28 @@ function showDetectedRecords(record){
 let lastBrowserSubmitId=null,lastBrowserSubmitFileId=null;
 const watchedBrowserTasks=new Set(state.browserWatchedIds||[]);
 const announcedOfficial=new Set();
+let browserResultNoticeTimer=null;
+function browserResultPresentation(record,english=false){
+ const official=record?.officialVerified===true&&record?.state==='verified';
+ const verdict=official?String(record.verdict||'UNKNOWN'):'';
+ const failed=official&&verdict!=='AC';
+ return {official,verdict,tone:official?(verdict==='AC'?'ac':verdict==='WA'?'wa':'error'):'pending',
+  headline:official?('官方 '+verdict):(record?.receipt?'Submission #'+record.receipt.id+' · '+(english?'Awaiting verification':'待核验'):(english?'Browser submission · Waiting for result':'浏览器提交 · 等待官网结果')),
+  reminder:failed?(english?'Please modify the code and submit again.':'请修改代码后重新提交。'):'',canAdvance:official&&verdict==='AC'};
+}
 function showBrowserResultNotice(record){
  const el=$('officialResultNotice');if(!el)return;
+ clearTimeout(browserResultNoticeTimer);
  if(!record){el.classList.add('hidden');return;}
- const official=record.officialVerified===true && record.state==='verified';
- const verdict=official?String(record.verdict||'UNKNOWN'):'', pending=record.phase==='watching'||record.state==='prepared'||record.state==='receipt_pending';
- const tone=official?(verdict==='AC'?'ac':verdict==='WA'?'wa':'error'):'pending';
- el.dataset.tone=tone;el.classList.remove('hidden');
- const headline=el.querySelector('.oj-result-headline'),detail=el.querySelector('.oj-result-detail');
- headline.textContent=official?('官方 '+verdict):(record.receipt?'Submission #'+record.receipt.id+' · 待核验':'浏览器提交 · 等待官网结果');
- detail.textContent=[record.platform||'',record.problemId||'',record.receipt?.id?('#'+record.receipt.id):'',record.platform==='codeforces'&&!official&&!state.preferences.codeforcesHandle?'Settings 中填写 Codeforces handle 才能自动核验':''].filter(Boolean).join(' · ');
- if(official){
+ const view=browserResultPresentation(record,lang()==='en');
+ el.dataset.tone=view.tone;el.classList.remove('hidden');
+ const headline=el.querySelector('.oj-result-headline'),detail=el.querySelector('.oj-result-detail'),next=el.querySelector('.oj-result-next');
+ headline.textContent=view.headline;
+ detail.textContent=[record.platform||'',record.problemId||'',record.receipt?.id?('#'+record.receipt.id):'',view.reminder,record.platform==='codeforces'&&!view.official&&!state.preferences.codeforcesHandle?'Settings 中填写 Codeforces handle 才能自动核验':''].filter(Boolean).join(' · ');
+ next.classList.toggle('hidden',!view.canAdvance);next.textContent=lang()==='en'?'Next problem →':'下一题 →';next.onclick=()=>{clearTimeout(browserResultNoticeTimer);el.classList.add('hidden');advanceContestTask(1);};
+ if(view.official){
+  browserResultNoticeTimer=setTimeout(()=>el.classList.add('hidden'),2000);
+  const verdict=view.verdict;
   const key=record.platform+':'+record.receipt?.id+':'+verdict;
   if(!announcedOfficial.has(key)){
    announcedOfficial.add(key);el.classList.remove('oj-result-animate');void el.offsetWidth;el.classList.add('oj-result-animate');

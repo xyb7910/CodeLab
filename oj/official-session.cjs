@@ -1,7 +1,7 @@
 'use strict';
 // Public website adapter metadata; browser authentication always belongs to the OJ.
 const {routeProblem,sourcePayload}=require('./submit-bridge.cjs');
-const STATUS_RE=/\b(AC|WA|TLE|MLE|RE|CE|OLE|PE|IE|UKE|WJ|Judging|Pending|Accepted|Wrong Answer|Time Limit Exceeded|Memory Limit Exceeded|Runtime Error|Compilation Error|Compile Error|Running|Waiting|Partially Correct|System Error|Output Limit Exceeded)\b/i;
+const STATUS_RE=/\b(AC|WA|TLE|MLE|RE|CE|OLE|PE|IE|UKE|WJ|Judging|Pending|Testing|In queue|Accepted|Wrong Answer|Time Limit Exceeded|Memory Limit Exceeded|Runtime Error|Compilation Error|Compile Error|Running|Waiting(?: for Judging)?|Partially Correct|System Error|Internal Error|Output Limit Exceeded|Idleness Limit Exceeded|Security Violated|Skipped|Rejected|Failed|Challenged)\b/i;
 const PLATFORMS=Object.freeze({
  codeforces:{hosts:['codeforces.com','www.codeforces.com'],account:'Codeforces handle',method:'official-public-api'},
  atcoder:{hosts:['atcoder.jp','www.atcoder.jp'],account:'AtCoder browser login',method:'official-detail-page'},
@@ -40,7 +40,7 @@ function normalizeOfficialStatus(text){
  if(typeof text!=='string')return null;
  const s=text.replace(/\s+/g,' ').trim().slice(0,160);
  if(!s||!STATUS_RE.test(s))return null;
- for(const [re,value] of [[/\b(AC|Accepted)\b/i,'AC'],[/\b(WA|Wrong Answer)\b/i,'WA'],[/\b(TLE|Time Limit Exceeded)\b/i,'TLE'],[/\b(MLE|Memory Limit Exceeded)\b/i,'MLE'],[/\b(RE|Runtime Error)\b/i,'RE'],[/\b(CE|Compilation Error|Compile Error)\b/i,'CE'],[/\b(OLE|Output Limit Exceeded)\b/i,'OLE'],[/\b(PE)\b/i,'PE'],[/\b(Pending|Judging|Running|Waiting|WJ)\b/i,'PENDING'],[/\b(Partially Correct)\b/i,'PARTIAL']])if(re.test(s))return value;
+ for(const [re,value] of [[/\b(AC|Accepted)\b/i,'AC'],[/\b(WA|Wrong Answer)\b/i,'WA'],[/\b(TLE|Time Limit Exceeded)\b/i,'TLE'],[/\b(MLE|Memory Limit Exceeded)\b/i,'MLE'],[/\b(RE|Runtime Error)\b/i,'RE'],[/\b(CE|Compilation Error|Compile Error)\b/i,'CE'],[/\b(OLE|Output Limit Exceeded)\b/i,'OLE'],[/\b(PE)\b/i,'PE'],[/\b(Pending|Judging|Testing|In queue|Running|Waiting(?: for Judging)?|WJ)\b/i,'PENDING'],[/\b(Partially Correct)\b/i,'PARTIAL'],[/\b(IE|System Error|Internal Error)\b/i,'IE'],[/\b(UKE)\b/i,'UKE'],[/\b(Idleness Limit Exceeded)\b/i,'IDLENESS'],[/\b(Security Violated)\b/i,'SECURITY'],[/\b(Skipped)\b/i,'SKIPPED'],[/\b(Rejected)\b/i,'REJECTED'],[/\b(Failed)\b/i,'FAILED'],[/\b(Challenged)\b/i,'CHALLENGED']])if(re.test(s))return value;
  return 'UNKNOWN';
 }
 function readCodeforcesRecord(json,submissionId,contestId){

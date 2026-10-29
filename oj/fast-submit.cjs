@@ -22,6 +22,7 @@ function comparable(result,task){
  if(task.receipt?.id!==String(result.id))return {match:false,reason:'提交记录编号与当前任务不一致'};
  if(task.platform==='codeforces'){
   if(result.contestId!=null && String(result.contestId)!==String(task.contestId))return {match:false,reason:'比赛 ID 不一致'};
+  if(result.problemId)return result.problemId===task.problemId?{match:true,confidence:'official-detail-problem-matched'}:{match:false,reason:'Codeforces 题号不一致'};
   if(result.problem !==task.index)return {match:false,reason:'Codeforces 题号不一致'};
   return {match:true,confidence:'official-api-problem-matched'};
  }
@@ -75,6 +76,10 @@ function store(directory){
   const waiting=['PENDING','TESTING','SUBMITTED','RUNNING','JUDGING'].includes(incoming);
   if(x.officialVerified && waiting)return; // A stale page cannot roll back an already verified AC/WA.
   x.verdict=incoming;
+  x.passedTests=Number.isInteger(result.passedTests)?result.passedTests:null;
+  x.timeMs=Number.isFinite(result.timeMs)?result.timeMs:null;
+  x.memoryBytes=Number.isFinite(result.memoryBytes)?result.memoryBytes:null;
+  x.rawVerdict=typeof result.rawVerdict==='string'?result.rawVerdict.slice(0,80):null;
   x.state=check.match?(waiting?'judging':'verified'):'unverified';
   x.officialVerified=check.match && x.state==='verified';x.confidence=check.match?check.confidence:null;
   if(!check.match)x.notes=[check.reason];
